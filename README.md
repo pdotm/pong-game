@@ -2,20 +2,24 @@
 
 ## Overview
 
-A single-player Pong game built in **Java with Swing**, following the **Model-View-Controller (MVC)** architecture. The player competes against a CPU opponent with the goal of reaching 5 points first.
+A single-player Pong game built in **Java with Swing**, following the **Model-View-Controller (MVC)** architecture. The game is a faithful recreation of the classic 1972 arcade game. The player controls a paddle on the left side of the screen using the `↑` and `↓` arrow keys, attempting to deflect a bouncing ball past the CPU-controlled paddle on the right. The ball moves at a fixed speed and bounces off the top and bottom walls; when it passes a paddle it scores a point for the other side. The first side to reach **5 points** wins. The AI paddle tracks the ball but occasionally introduces random positional error, giving the player a fair chance to win. The game runs in a classic arcade style — white paddles and ball on a black background — at a smooth ~60 fps.
 
 ---
 
 ## Game Specifics
 
-| Property       | Detail                                      |
-|----------------|---------------------------------------------|
-| Mode           | 1 player vs. AI (CPU)                       |
-| Controls       | Player paddle: `↑` / `↓` arrow keys        |
-| Win condition  | First to **5 points** wins                  |
-| AI difficulty  | Single fixed difficulty                     |
-| Visual style   | Classic arcade — black background, white paddles and ball |
-| Screens        | Start screen, gameplay screen, game-over screen |
+| Property           | Detail                                                        |
+|--------------------|---------------------------------------------------------------|
+| Mode               | 1 player vs. AI (CPU)                                         |
+| Window size        | 800 × 600 px                                                  |
+| Controls           | Player paddle: `↑` / `↓` arrow keys                         |
+| Win condition      | First to **5 points** wins                                    |
+| Ball speed         | Fixed throughout the match; resets to center after each point |
+| Ball serve         | After a point, ball is served toward the player who just scored |
+| Paddle size        | Standard — approximately 1/5 of canvas height                 |
+| AI behavior        | Tracks ball position but applies random error, capped speed   |
+| Visual style       | Classic arcade — black background, white paddles and ball     |
+| Screens            | Start screen, gameplay screen, game-over screen               |
 
 ---
 
@@ -74,6 +78,22 @@ pong-game/
 │       └── Main.java
 └── README.md
 ```
+
+---
+
+## Definition of Done
+
+This project is considered complete when **all** of the following criteria are met:
+
+- [ ] All source code compiles and runs with no errors under a standard JDK (Java 11+).
+- [ ] The full game loop is playable end-to-end: Start screen → gameplay → Game Over screen → restart.
+- [ ] Player paddle responds correctly to `↑`/`↓` input and is clamped within the canvas bounds.
+- [ ] AI paddle moves toward the ball each frame with a random error offset, making it beatable.
+- [ ] Ball collides correctly with top/bottom walls and both paddles; no tunneling through objects.
+- [ ] Scores increment correctly; the correct winner is declared at 5 points.
+- [ ] Ball resets to center and serves toward the scoring side after each point.
+- [ ] No known gameplay bugs (score glitches, ball getting stuck, paddles leaving bounds, etc.).
+- [ ] Code is organized into the defined `model/`, `view/`, and `controller/` packages; no cross-layer violations (View never mutates Model directly).
 
 ---
 
