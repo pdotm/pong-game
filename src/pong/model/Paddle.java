@@ -7,7 +7,7 @@ public class Paddle {
 
     public static final int WIDTH  = 12;
     public static final int HEIGHT = 100;
-    public static final int SPEED  = 5;
+    public static final int SPEED  = 8;
 
     protected int x;
     protected int y;

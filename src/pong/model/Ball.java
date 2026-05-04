@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 public class Ball {
 
     public static final int RADIUS = 8;
-    public static final double BASE_SPEED = 4.0;
+    public static final double BASE_SPEED = 7.0;
 
     private double x;
     private double y;
