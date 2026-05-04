@@ -10,7 +10,7 @@ public class AiPaddle extends Paddle {
     /**
      * Error range computed as a fraction of the actual canvas height so the
      * AI's miss rate stays consistent regardless of playing area size.
-     * Expressed as canvasHeight / 7 (~14% of the canvas per side).
+     * Expressed as canvasHeight / 6 (~16.67% of the canvas per side).
      */
     private final int errorRange;
 
