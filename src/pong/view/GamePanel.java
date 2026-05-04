@@ -7,6 +7,8 @@ import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -14,9 +16,15 @@ import java.awt.RenderingHints;
 /** Purpose: The main gameplay canvas (extends JPanel). */
 public class GamePanel extends JPanel {
 
-    private static final Color BG    = Color.BLACK;
-    private static final Color FG    = Color.WHITE;
-    private static final int   DASH  = 10;
+    public static final Color PLAYER_COLOR = new Color(220, 60,  60);
+    public static final Color AI_COLOR     = new Color(60,  120, 220);
+
+    private static final Color BG_LEFT   = new Color(20, 5,  5);
+    private static final Color BG_RIGHT  = new Color(5,  5,  20);
+    private static final Color BALL_CLR  = Color.WHITE;
+    private static final Color LINE_CLR  = new Color(55, 55, 55);
+    private static final Font  LABEL_FONT = new Font("Monospaced", Font.BOLD, 14);
+    private static final int   DASH      = 10;
 
     private Ball   ball;
     private Paddle playerPaddle;
@@ -24,7 +32,6 @@ public class GamePanel extends JPanel {
 
     public GamePanel(int width, int height) {
         setPreferredSize(new Dimension(width, height));
-        setBackground(BG);
     }
 
     /** Pushes the latest model references before each repaint. */
@@ -41,20 +48,44 @@ public class GamePanel extends JPanel {
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(FG);
+
+        int w  = getWidth();
+        int h  = getHeight();
+        int cx = w / 2;
+
+        // Tinted background halves
+        g2.setColor(BG_LEFT);
+        g2.fillRect(0, 0, cx, h);
+        g2.setColor(BG_RIGHT);
+        g2.fillRect(cx, 0, cx, h);
 
         // Center dashed dividing line
-        int cx = getWidth() / 2;
         float[] dashPattern = { DASH, DASH };
+        g2.setColor(LINE_CLR);
         g2.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashPattern, 0));
-        g2.drawLine(cx, 0, cx, getHeight());
+        g2.drawLine(cx, 0, cx, h);
         g2.setStroke(new BasicStroke(1));
 
-        // Paddles
-        g2.fillRect(playerPaddle.getX(), playerPaddle.getY(), Paddle.WIDTH, Paddle.HEIGHT);
-        g2.fillRect(aiPaddle.getX(),     aiPaddle.getY(),     Paddle.WIDTH, Paddle.HEIGHT);
+        // Side labels
+        g2.setFont(LABEL_FONT);
+        FontMetrics fm = g2.getFontMetrics();
+        String pLabel = "YOU";
+        String cLabel = "CPU";
+        g2.setColor(new Color(140, 55, 55));
+        g2.drawString(pLabel, cx / 2 - fm.stringWidth(pLabel) / 2, 22);
+        g2.setColor(new Color(50, 85, 155));
+        g2.drawString(cLabel, cx + cx / 2 - fm.stringWidth(cLabel) / 2, 22);
 
-        // Ball
+        // Player paddle — red, rounded
+        g2.setColor(PLAYER_COLOR);
+        g2.fillRoundRect(playerPaddle.getX(), playerPaddle.getY(), Paddle.WIDTH, Paddle.HEIGHT, 6, 6);
+
+        // AI paddle — blue, rounded
+        g2.setColor(AI_COLOR);
+        g2.fillRoundRect(aiPaddle.getX(), aiPaddle.getY(), Paddle.WIDTH, Paddle.HEIGHT, 6, 6);
+
+        // Ball — white
+        g2.setColor(BALL_CLR);
         int bx = (int) ball.getX() - Ball.RADIUS;
         int by = (int) ball.getY() - Ball.RADIUS;
         g2.fillOval(bx, by, Ball.RADIUS * 2, Ball.RADIUS * 2);

@@ -8,12 +8,11 @@ public class AiPaddle extends Paddle {
     private static final int AI_SPEED = 5;
 
     /**
-     * Maximum random error (in pixels) applied to the AI's committed target Y.
-     * Because the target is fixed at the moment the ball turns toward the AI,
-     * a faster paddle simply reaches the wrong position sooner — speed does not
-     * cancel the error.
+     * Error range computed as a fraction of the actual canvas height so the
+     * AI's miss rate stays consistent regardless of playing area size.
+     * Expressed as canvasHeight / 7 (~14% of the canvas per side).
      */
-    private static final int ERROR_RANGE = 120;
+    private final int errorRange;
 
     private final Random random = new Random();
 
@@ -24,6 +23,7 @@ public class AiPaddle extends Paddle {
     public AiPaddle(int x, int canvasHeight) {
         super(x, canvasHeight);
         committedTargetY = canvasHeight / 2 - HEIGHT / 2;
+        errorRange = canvasHeight / 5;
     }
 
     /**
@@ -80,6 +80,6 @@ public class AiPaddle extends Paddle {
 
     /** Picks a new random error for the next approach. */
     public void randomiseError() {
-        errorOffset = random.nextInt(ERROR_RANGE * 2 + 1) - ERROR_RANGE;
+        errorOffset = random.nextInt(errorRange * 2 + 1) - errorRange;
     }
 }
