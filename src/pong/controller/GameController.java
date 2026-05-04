@@ -13,6 +13,9 @@ import java.awt.event.KeyEvent;
 /** Purpose: Central coordinator that wires the Model, View, and input together. */
 public class GameController implements GameLoop.TickListener {
 
+    /** Ticks at ~60 fps × 1.5 seconds = 90 ticks per countdown. */
+    private static final int COUNTDOWN_TICKS = 90;
+
     private final MainFrame    frame;
     private final GameState    gameState;
     private final Ball         ball;
@@ -20,6 +23,9 @@ public class GameController implements GameLoop.TickListener {
     private final AiPaddle     aiPaddle;
     private final GameLoop     gameLoop;
     private final InputHandler inputHandler;
+
+    private int countdownTicksLeft   = 0;
+    private int pendingServeDirection = 1;
 
     public GameController() {
         frame = new MainFrame();
@@ -73,39 +79,61 @@ public class GameController implements GameLoop.TickListener {
 
     @Override
     public void onTick() {
-        // Apply player input
+        // Handle pre-serve countdown — player may still move their paddle
+        if (countdownTicksLeft > 0) {
+            if (inputHandler.isUpPressed())   playerPaddle.moveUp();
+            if (inputHandler.isDownPressed()) playerPaddle.moveDown();
+
+            countdownTicksLeft--;
+
+            if (countdownTicksLeft == 0) {
+                // Countdown finished — serve the ball
+                ball.serve(pendingServeDirection);
+                frame.getGamePanel().setCountdown(0);
+            } else {
+                // 3 at ticks 89-60, 2 at 59-30, 1 at 29-1
+                int displayNumber = (countdownTicksLeft - 1) / 30 + 1;
+                frame.getGamePanel().setCountdown(displayNumber);
+            }
+
+            frame.getGamePanel().update(ball, playerPaddle, aiPaddle);
+            frame.getGamePanel().repaint();
+            return;
+        }
+
+        // Normal gameplay tick
         if (inputHandler.isUpPressed())   playerPaddle.moveUp();
         if (inputHandler.isDownPressed()) playerPaddle.moveDown();
 
-        // Advance ball
         ball.move();
-
-        // Advance AI
         aiPaddle.update(ball);
 
-        // Paddle collision — check player first, then AI
+        // Paddle collisions — 10% chance to ignite on each bounce
+        boolean bounced = false;
         if (ball.intersects(playerPaddle.getBounds())) {
             ball.bounceOffPaddle(playerPaddle.getBounds());
+            bounced = true;
         } else if (ball.intersects(aiPaddle.getBounds())) {
             ball.bounceOffPaddle(aiPaddle.getBounds());
+            bounced = true;
+        }
+        if (bounced && !ball.isOnFire() && Math.random() < 0.10) {
+            ball.ignite();
         }
 
-        // Scoring — ball exits left: CPU scores; exits right: player scores
+        // Scoring
         if (ball.isOutLeft()) {
             gameState.incrementCpuScore();
             if (gameState.getPhase() == GameState.Phase.PLAYING) {
-                ball.reset(1);  // serve toward CPU (right)
-                aiPaddle.randomiseError();
+                beginCountdown(1);   // serve toward CPU (right)
             }
         } else if (ball.isOutRight()) {
             gameState.incrementPlayerScore();
             if (gameState.getPhase() == GameState.Phase.PLAYING) {
-                ball.reset(-1); // serve toward player (left)
-                aiPaddle.randomiseError();
+                beginCountdown(-1);  // serve toward player (left)
             }
         }
 
-        // Push latest state to canvas and repaint
         frame.getGamePanel().update(ball, playerPaddle, aiPaddle);
         frame.getGamePanel().repaint();
     }
@@ -126,17 +154,28 @@ public class GameController implements GameLoop.TickListener {
         }
     }
 
-    private void startGame() {
-        ball.reset(1);
+    /**
+     * Parks the ball at center, resets both paddles, and starts the 3-second
+     * countdown before serving in the given direction.
+     */
+    private void beginCountdown(int serveDirection) {
+        pendingServeDirection = serveDirection;
+        countdownTicksLeft    = COUNTDOWN_TICKS;
+        ball.parkAtCenter();
         playerPaddle.reset();
         aiPaddle.reset();
         aiPaddle.randomiseError();
-        gameState.setPhase(GameState.Phase.PLAYING);
+        frame.getGamePanel().setCountdown(3);
+    }
+
+    private void startGame() {
+        gameState.setPhase(GameState.Phase.PLAYING);  // starts the game loop
+        beginCountdown(1);
     }
 
     private void restartGame() {
         gameState.reset();  // clears scores, sets phase → START
         frame.getScorePanel().update(0, 0);
-        startGame();        // immediately transitions to PLAYING
+        startGame();
     }
 }
