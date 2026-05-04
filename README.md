@@ -85,15 +85,15 @@ pong-game/
 
 This project is considered complete when **all** of the following criteria are met:
 
-- [ ] All source code compiles and runs with no errors under a standard JDK (Java 11+).
-- [ ] The full game loop is playable end-to-end: Start screen → gameplay → Game Over screen → restart.
-- [ ] Player paddle responds correctly to `↑`/`↓` input and is clamped within the canvas bounds.
-- [ ] AI paddle moves toward the ball each frame with a random error offset, making it beatable.
-- [ ] Ball collides correctly with top/bottom walls and both paddles; no tunneling through objects.
-- [ ] Scores increment correctly; the correct winner is declared at 5 points.
-- [ ] Ball resets to center and serves toward the scoring side after each point.
-- [ ] No known gameplay bugs (score glitches, ball getting stuck, paddles leaving bounds, etc.).
-- [ ] Code is organized into the defined `model/`, `view/`, and `controller/` packages; no cross-layer violations (View never mutates Model directly).
+- [X] All source code compiles and runs with no errors under a standard JDK (Java 11+).
+- [X] The full game loop is playable end-to-end: Start screen → gameplay → Game Over screen → restart.
+- [X] Player paddle responds correctly to `↑`/`↓` input and is clamped within the canvas bounds.
+- [X] AI paddle moves toward the ball each frame with a random error offset, making it beatable.
+- [X] Ball collides correctly with top/bottom walls and both paddles; no tunneling through objects.
+- [X] Scores increment correctly; the correct winner is declared at 5 points.
+- [X] Ball resets to center and serves toward the scoring side after each point.
+- [X] No known gameplay bugs (score glitches, ball getting stuck, paddles leaving bounds, etc.).
+- [X] Code is organized into the defined `model/`, `view/`, and `controller/` packages; no cross-layer violations (View never mutates Model directly).
 
 ---
 
@@ -104,3 +104,8 @@ This project is considered complete when **all** of the following criteria are m
 3. **Each tick** → `GameLoop` updates `Ball`, `AiPaddle`, checks collisions, updates `GameState` scores, notifies `GameController`, which repaints the View.
 4. **Score reaches 5** → `GameState` sets phase to `GAME_OVER`; `GameController` shows `GameOverScreen`.
 5. **R key** → `GameController` resets `GameState` and restarts.
+
+# Reflection
+This repo contains the classic arcade game Pong. Both the player and the computer have a side to defend and a movable paddle to use to block the ball. If the ball gets past a paddle, the opposing side earns a point. The game ends after one side gets 5 points. Occasionally, the ball will turn into a fireball, doubling its speed for the rest of the round to make gameplay more exciting. The AI paddle is a tough but beatable opponent, good luck!
+
+In this project, I learned that creating a spec is extremely helpful both for myself and for AI. It allows me to plan the project out before development starts, and the planning phase allows AI to get answers to questions it has that it otherwise would have used assumptions to answer. Additionally, I learned that the interview process is great for getting information out into a spec, and having AI conduct the interview also helped the collaborative development process. This project also reinforced my earlier learning that constants are extraordinarily powerful for making configuration simpler as I changed the app configuration through them many times throughout the project. 
