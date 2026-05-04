@@ -23,7 +23,7 @@ public class AiPaddle extends Paddle {
     public AiPaddle(int x, int canvasHeight) {
         super(x, canvasHeight);
         committedTargetY = canvasHeight / 2 - HEIGHT / 2;
-        errorRange = canvasHeight / 5;
+        errorRange = canvasHeight / 6;
     }
 
     /**
